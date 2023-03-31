@@ -6,6 +6,26 @@
 
 The repository is organised into several folders. Each folder has a file solving a particular task/problem/challenge.
 
+* [abstract_data_types_sum](abstract_data_types_sum/sum.c)
+> The challenge/problem/task is shown below.
+```
+The program allows a user to
+
+1. Select the abstract data type they want to work with - Arrays, Matrices, Polynomials
+
+2. For arrays (Implemented using arrays):
+    - A user specifies the number of elements in the arrays in which they want to sum
+    - A user specifies how many arrays they want to sum
+
+3. For matrices (Implemented using arrays):
+    - A user specifies the order of a 2D matrix that they want to sum
+    - A user selects the number of matrices they want to sum
+
+4. For polynomials (Implemented using arrays & linked lists):
+    - A user specifies the number of polynomials they want to add
+    - For each polynomial, they add the number of terms they wish to have until they wish to stop
+```
+
 * [grading](grading/grading.c)
 > The challenge/problem/task is shown below.
 ```
