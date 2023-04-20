@@ -6,6 +6,22 @@
 
 The repository is organised into several folders. Each folder has a file solving a particular task/problem/challenge.
 
+* [binary_tree](binary_tree)
+> The challenge/problem/task is shown below.
+```
+The folder contains
+- binary_tree.c - The program implements a binary tree.
+
+For the binary_tree.c, several operations are performed:
+* Inserting to the binary tree
+* Searching in the binary tree
+* Updating in the binary tree
+* Tranversing the whole tree (In order, Pre order and post order)
+* Find the depth of the tree
+* SHow the number of nodes per level of the tree
+* SHow whether the tree is empty
+```
+
 * [stack_queues](stack_queues)
 > The challenge/problem/task is shown below.
 ```
