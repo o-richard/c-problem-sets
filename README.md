@@ -6,6 +6,21 @@
 
 The repository is organised into several folders. Each folder has a file solving a particular task/problem/challenge.
 
+* [stack_queues](stack_queues)
+> The challenge/problem/task is shown below.
+```
+The folder contains
+- stacks.c - The program implements a stack abstract data type using arrays.
+- queues.c - The program implements a queue abstract data type using arrays.
+
+For both stacks and queues, basic operations are done:
+    * Insterting a new item
+    * Removing an item
+    * Checking their current total size
+    * Checking if they are empty or full
+    * Checking their topmost element (Queue is FIFO - First In First Out while Stack is LIFO - Last In First Out)
+```
+
 * [abstract_data_types_sum](abstract_data_types_sum/sum.c)
 > The challenge/problem/task is shown below.
 ```
