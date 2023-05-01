@@ -1,243 +1,162 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
-// A node in the tree
-typedef struct node
+typedef struct treenode
 {
-    // Store a unique key of a student
     int key;
-    // Store the first name of the student
-    char first_name[20];
-    // Store the last name of the student
-    char last_name[20];
-    // A pointer to the left node
-    struct node *left;
-    // A pointer to the right node
-    struct node *right;
-}
-node;
+    char fname_initial, lname_initial;
+    struct treenode *left;
+    struct treenode *right;
+} treenode;
 
-// A student data type
-typedef struct student
-{
-    // Store a unique key of a student
-    int key;
-    // Store the first name of the student
-    char first_name[20];
-    // Store the last name of the student
-    char last_name[20];
-}
-student;
-
-// Display the main menu
 int display_menu();
-// Display the traversal menu
 int traversal_display_menu();
-// Check if a key exists (1 - True & 0 - False)
-int find_key(int key, node *current);
-// Insert a new node.
-void insert_node(node *newNode);
-// Update the node of a partiular key
-void update_node(int key, char fname[], char lname[], node *current);
-// Show the data of a particular student key
-void search_key(int key, node *current);
-// In order traversal
-void inorder(node *current);
-// Pre order traversal
-void preorder(node *current);
-// Post order traversal
-void postorder(node *current);
-// Return the maximum depth
-int maxDepth(node *current);
-// Show all student keys in a given level from left to right
-void currentlevel(node *current, int level);
-// Free dynamic memory
-void destroy_tree(node *current);
 
-// The root of the tree
-node *root = NULL;
-// The number of students currently
-int studentCount = 0;
+treenode *createnode(int key, char fname_initial, char lname_initial);
+bool insertnode(treenode **rootptr, int key, char fname_initial, char lname_initial, bool is_update);
+bool findnode(treenode *root, int key);
 
-// The main function
-int main()
+// Print the tabs for each tree level
+void printtabs_per_level(int numtabs);
+// Print the tree without tabs per level
+void inorder_notabs(treenode *root);
+void preorder_notabs(treenode *root);
+void postorder_notabs(treenode *root);
+// Print the tree with tabs per level
+void inorder_tabs(treenode *root, int level);
+void preorder_tabs(treenode *root, int level);
+void postorder_tabs(treenode *root, int level);
+
+int maxDepth(treenode *root);
+void destroy_tree(treenode *root);
+
+int main ()
 {
-    // The program runs until a user explicitly exits
+    treenode *root = NULL;
+
     for(;;)
     {
         int user_choice = display_menu();
 
         switch (user_choice)
         {
-        case 1:
+            case 1:
             {
-                // Insert a new student
-                node *newNode = malloc(sizeof(node));
-                // Ensure the memory is available
-                if (newNode == NULL)
+                int key;
+                char fname_initial, lname_initial;
+                printf("Enter the unique key of the student (An Interger): ");
+                scanf("%d", &key);
+
+                while ((getchar()) != '\n' );
+                printf("Enter the first name initial of the student (A character): ");
+                fname_initial = getchar();
+
+                while ((getchar()) != '\n' );
+                printf("Enter the last name of the student (A character): ");
+                lname_initial = getchar();
+
+                bool result = insertnode(&root, key, fname_initial, lname_initial, false);
+                if (result == true)
                 {
-                    printf("There is not enough memory to insert the node");
-                    break;
+                    printf("The insertion was succesful.\n");
+                }
+                else
+                {
+                    printf("The insertion was not succesful. Key %d already exists.\n", key);
                 }
 
-                // The key of the student
-                int student_key;
-                // The first & last name of the student
-                char first_name[20], last_name[20];
+                break;
+            }
+            case 2:
+            {
+                int key;
                 printf("Enter the unique key of the student (An Interger): ");
-                scanf("%d", &student_key);
-                printf("Enter the first name of the student: ");
-                scanf("%s", first_name);
-                printf("Enter the last name of the student: ");
-                scanf("%s", last_name);
+                scanf("%d", &key);
 
-                // Update the node information
-                newNode->key = student_key;
-                strcpy(newNode->first_name, first_name);
-                strcpy(newNode->last_name, last_name);
-                newNode->left = NULL;
-                newNode->right = NULL;
-
-                // Check if the key already exists (Ask to replace or pass)
-                int key_exists = find_key(student_key, root);
-                if (key_exists == 1)
+                bool result = findnode(root, key);
+                if (result == true)
                 {
-                    printf("\n");
-                    int user_insertion_choice;
-                    printf("The key %d already exists, do you wish to replace the previous data with the current one?\n", student_key);
-                    do
-                    {
-                        printf("Your option (1. Yes. 2. No): ");
-                        scanf("%d", &user_insertion_choice);
-                    } while ((user_insertion_choice < 1) || (user_insertion_choice > 2));
-
-                    if (user_insertion_choice == 2)
-                    {
-                        // Free the new node
-                        free(newNode);
-                        break;
-                    }
-                    else 
-                    {
-                        // Free the new node
-                        free(newNode);
-                        // Perform an update
-                        update_node(student_key, first_name, last_name, root);
-                        break;
-                    }
+                    printf("The student with the key %d was found.\n", key);
                 }
-                // Perfrom the instertion
-                insert_node(newNode);
-                printf("The insertion was succesful\n");
-                // Increment the number of students
-                studentCount++;
-                break;
-            }
-        case 2:
-            {
-                // The key of the student
-                int student_key;
-                printf("Enter the unique key of the student (An Interger): ");
-                scanf("%d", &student_key);
-
-                // Perform a search
-                search_key(student_key, root);
-                break;
-            }
-        case 3:
-            {
-                // Update for a student
-
-                // The key of the student
-                int student_key;
-                printf("Enter the unique key of the student (An Interger): ");
-                scanf("%d", &student_key);
-
-                // Ensure the student key exists
-                int key_exists = find_key(student_key, root);
-                if (key_exists == 0)
+                else
                 {
-                    printf("Sorry, this student key does not exists.\n");
-                    break;
+                    printf("The student with the key %d was not found.\n", key);
                 }
 
-                // The first & last name of the student
-                char first_name[20], last_name[20];
-                printf("Enter the first name of the student: ");
-                scanf("%s", first_name);
-                printf("Enter the last name of the student: ");
-                scanf("%s", last_name);
-
-                // Perform an update
-                update_node(student_key, first_name, last_name, root);
-                printf("The update was succesful\n");
                 break;
             }
-        case 4:
+            case 3:
+            {
+                int key;
+                char fname_initial, lname_initial;
+                printf("Enter an existing unique key of the student (An Interger): ");
+                scanf("%d", &key);
+
+                while ((getchar()) != '\n' );
+                printf("Enter the first name initial of the student (A character): ");
+                fname_initial = getchar();
+
+                while ((getchar()) != '\n' );
+                printf("Enter the last name initial of the student (A character): ");
+                lname_initial = getchar();
+
+                bool result = insertnode(&root, key, fname_initial, lname_initial, true);
+                if (result == true)
+                {
+                    printf("The update was succesful.\n");
+                }
+                else
+                {
+                    printf("The update was not succesful. Ensure key %d exists.\n", key);
+                }
+
+                break;
+            }
+            case 4:
             {
                 // Tranverse the whole tree
                 int user_tranversal_choice = traversal_display_menu();
                 
                 if (user_tranversal_choice == 1)
                 {
-                    inorder(root);
+                    inorder_notabs(root);
                 }
                 else if (user_tranversal_choice == 2)
                 {
-                    preorder(root);
+                    preorder_notabs(root);
+                }
+                else if (user_tranversal_choice == 3)
+                {
+                    postorder_notabs(root);
+                }
+                else if (user_tranversal_choice == 4)
+                {
+                    inorder_tabs(root, 0);
+                }
+                else if (user_tranversal_choice == 5)
+                {
+                    preorder_tabs(root, 0);
                 }
                 else
                 {
-                    postorder(root);
+                    postorder_tabs(root, 0);
                 }
-
-                if (root == NULL)
-                {
-                    printf("The tree is empty.\n");
-                }
+            
                 break;
             }
-        case 5:
+            case 5:
             {
-                // Find the depth of the tree
                 printf("The depth of the tree is %d.\n", maxDepth(root));
                 break;
             }
-        case 6:
+            case 6:
             {
-                // Show the nodes per level of the tree
-                int depth = maxDepth(root);
-                for (int i = 0; i < depth; i++)
-                {
-                    printf("Level %d: ", i);
-                    currentlevel(root, i);
-                    printf("\n");
-                }
-                
-                break;
-            }
-        case 7:
-            {
-                if (root == NULL)
-                {
-                    printf("The tree is empty.\n");
-                }
-                else
-                {
-                    printf("The tree is not empty.\n");
-                }
-                break;
-            }
-        case 8:
-            {
-                // Exit out of the program
-                
-                // Delete the whole tree
                 destroy_tree(root);
                 return 0;
             }
         }
+
         int main_menu_choice = 1;
         do
         {
@@ -247,215 +166,274 @@ int main()
 
         if (main_menu_choice == 2)
         {
-            // Exit out of the program    
-            // Delete the whole tree
             destroy_tree(root);
             return 0;
         }
     }
 }
 
-// Display the main menu
 int display_menu()
 {
-    // User's choice
-    int choice;
+    int user_choice;
     printf("\n");
     printf("1. Insert a new student\n");
     printf("2. Search for a student\n");
     printf("3. Update for a student\n");
     printf("4. Tranverse the whole tree - Display the student keys only\n");
     printf("5. Find the depth of the tree\n");
-    printf("6. Find the number of nodes per level of the tree\n");
-    printf("7. Check if the tree is empty\n");
-    printf("8. Exit\n");
+    printf("6. Exit\n");
 
     do
     {
         printf("Enter the number of your option: ");
-        scanf("%d", &choice);
-    } while ((choice < 1) || (choice > 8));
+        scanf("%d", &user_choice);
+    } while ((user_choice < 1) || (user_choice > 6));
     
-    return choice;
+    return user_choice;
 }
 
-// Display the tranversal menu
 int traversal_display_menu()
 {
-    // User's choice
-    int choice;
+    int user_choice;
     printf("\n");
-    printf("1. In Order\n");
-    printf("2. Pre Order\n");
-    printf("3. Post Order\n");
+    printf("1. In Order - Without tabs\n");
+    printf("2. Pre Order - Without tabs\n");
+    printf("3. Post Order - Without tabs\n");
+    printf("4. In Order - With tabs\n");
+    printf("5. Pre Order - With tabs\n");
+    printf("6. Post Order - With tabs\n");
 
     do
     {
         printf("Enter the number of your option: ");
-        scanf("%d", &choice);
-    } while ((choice < 1) || (choice > 3));
-
-    return choice;
+        scanf("%d", &user_choice);
+    } while ((user_choice < 1) || (user_choice > 6));
+    return user_choice;
 }
 
-// Check if a key exists (1 - True & 0 - False)
-int find_key(int key, node *current)
+treenode *createnode(int key, char fname_initial, char lname_initial)
 {
-    if (current != NULL)
-    {
-        if (key == (current->key))
-        {
-            return 1;
-        }
-        else if (key < (current->key))
-        {
-            return find_key(key, current->left);
-        }
-        else
-        {
-            return find_key(key, current->right);
-        }
-    }
-    else
-    {
-        return 0;
-    }
+    treenode *new = malloc(sizeof(treenode));
+
+    if (new == NULL) return NULL;
+
+    new->key = key;
+    new->fname_initial = fname_initial;
+    new->lname_initial = lname_initial;
+    new->left = NULL;
+    new->right = NULL;
+
+    return new;
 }
 
-// Inserts a new node
-void insert_node(node *newNode)
+bool insertnode(treenode **rootptr, int key, char fname_initial, char lname_initial, bool is_update)
 {
+    treenode *root = *rootptr;
+
+    // Empty tree
     if (root == NULL)
     {
-        // Perform the insertion
-        root = newNode;
-        return;
-    }
-
-    // Traverse the tree to find the appropriate location for the new node
-    node *current_node = root;
-    while (1) 
-    {
-        if ((newNode->key) < current_node->key) 
+        // Incase an update is occurring
+        if (is_update == true)
         {
-            if (current_node->left == NULL) 
-            {
-                current_node->left = newNode;
-                break;
-            }
-            current_node = current_node->left;
-        } 
-        else if ((newNode->key) > current_node->key) 
-        {
-            if (current_node->right == NULL) 
-            {
-                current_node->right = newNode;
-                break;
-            }
-            current_node = current_node->right;
-        }
-    }
-    return;
-}
-
-// Update the node
-void update_node(int key, char fname[], char lname[], node *current)
-{
-    if (current != NULL)
-    {
-        if (key == (current->key))
-        {
-            // Update the information
-            strcpy(current->first_name, fname);
-            strcpy(current->last_name, lname);
-            return;
-        }
-        else if (key < (current->key))
-        {
-            return update_node(key, fname, lname, current->left);
+            return false;
         }
         else
         {
-            return update_node(key, fname, lname, current->right);
+            (*rootptr) = createnode(key, fname_initial, lname_initial);
+            return true;
         }
     }
-}
 
-// Show the data of a particular student key
-void search_key(int key, node *current)
-{
-    if (current != NULL)
+    // Key Exists
+    if (root->key == key) 
     {
-        if (key == (current->key))
+        // Incase an update is occuring
+        if (is_update == true)
         {
-            printf("A record of a student with the key %d was found.\n", key);
-            printf("The first name of the student: %s\n", current->first_name);
-            printf("The last name of the student: %s\n", current->last_name);
-            return;
-        }
-        else if (key < (current->key))
-        {
-            return search_key(key, current->left);
+            root->fname_initial = fname_initial;
+            root->lname_initial = lname_initial;
+            return true;
         }
         else
         {
-            return search_key(key, current->right);
+            return false;
         }
+    }
+
+    if (key < (root->key))
+    {
+        insertnode(&(root->left), key, fname_initial, lname_initial, is_update);
     }
     else
     {
-        printf("No such record was found.\n");
+        insertnode(&(root->right), key, fname_initial, lname_initial, is_update);
+    }
+}
+
+bool findnode(treenode *root, int key)
+{
+    if (root == NULL) return false;
+
+    if (root->key == key) 
+    {
+        printf("\tFirst Name Initial: %c\n", root->fname_initial);
+        printf("\tLast Name Initial: %c\n", root->lname_initial);
+        return true;
+    }
+
+    if (key < (root->key))
+    {
+        findnode((root->left), key);
+    }
+    else
+    {
+        findnode((root->right), key);
+    }
+}
+
+void printtabs_per_level(int numtabs)
+{
+    for (int i = 0; i < numtabs; i++)
+    {
+        printf("\t");
+    }
+}
+
+// In order traversal (Visit the root as the middle one)
+void inorder_notabs(treenode *root)
+{
+    if (root != NULL)
+    {
+        printf("Left\n");
+        inorder_notabs(root->left);
+        printf("Key: %d\n\tFirst Name Initial: %c\n\tLast Name Initial: %c\n", root->key, root->fname_initial, root->lname_initial);
+        printf("Right\n");
+        inorder_notabs(root->right);
+    }
+    else
+    {
+        printf("----- <empty> ----\n");
+        return;
+    }
+}
+// Pre order traversal (Visit the root as the first one)
+void preorder_notabs(treenode *root)
+{
+    if (root != NULL)
+    {
+        printf("Key: %d\n\tFirst Name Initial: %c\n\tLast Name Initial: %c\n", root->key, root->fname_initial, root->lname_initial);
+        printf("Left\n");
+        preorder_notabs(root->left);
+        printf("Right\n");
+        preorder_notabs(root->right);
+        return;
+    }
+    else
+    {
+        printf("----- <empty> ----\n");
+        return;
+    }
+}
+// Post order traversal (Visit the root as the last one)
+void postorder_notabs(treenode *root)
+{
+    if (root != NULL)
+    {
+        printf("Left\n");
+        postorder_notabs(root->left);
+        printf("Right\n");
+        postorder_notabs(root->right);
+        printf("Key: %d\n\tFirst Name Initial: %c\n\tLast Name Initial: %c\n", root->key, root->fname_initial, root->lname_initial);
+    }
+    else
+    {
+        printf("----- <empty> ----\n");
         return;
     }
 }
 
-// In order traversal (Visit the root as the middle value)
-void inorder(node *current)
+// In order traversal (Visit the root as the middle one)
+void inorder_tabs(treenode *root, int level)
 {
-    if (current != NULL)
+    if (root != NULL)
     {
-        inorder(current->left);
-        printf(" %d ", current->key);
-        inorder(current->right);
+        printtabs_per_level(level);
+        printf("Left\n");
+        inorder_tabs(root->left, level + 1);
+
+        printtabs_per_level(level);
+        printf("Key: %d\n\tFirst Name Initial: %c\n\tLast Name Initial: %c\n", root->key, root->fname_initial, root->lname_initial);
+        
+        printtabs_per_level(level);
+        printf("Right\n");
+        inorder_tabs(root->right, level + 1);
+    }
+    else
+    {
+        printf("----- <empty> ----\n");
+        return;
+    }
+}
+// Pre order traversal (Visit the root as the first one)
+void preorder_tabs(treenode *root, int level)
+{
+    if (root != NULL)
+    {
+        printtabs_per_level(level);
+        printf("Key: %d\n\tFirst Name Initial: %c\n\tLast Name Initial: %c\n", root->key, root->fname_initial, root->lname_initial);
+        
+        printtabs_per_level(level);
+        printf("Left\n");
+        preorder_tabs(root->left, level + 1);
+        
+        printtabs_per_level(level);
+        printf("Right\n");
+        preorder_tabs(root->right, level + 1);
+        return;
+    }
+    else
+    {
+        printf("----- <empty> ----\n");
+        return;
+    }
+}
+// Post order traversal (Visit the root as the last one)
+void postorder_tabs(treenode *root, int level)
+{
+    if (root != NULL)
+    {
+        printtabs_per_level(level);
+        printf("Left\n");
+        postorder_tabs(root->left, level + 1);
+        
+        printtabs_per_level(level);
+        printf("Right\n");
+        postorder_tabs(root->right, level + 1);
+        
+        printtabs_per_level(level);
+        printf("Key: %d\n\tFirst Name Initial: %c\n\tLast Name Initial: %c\n", root->key, root->fname_initial, root->lname_initial);
+    }
+    else
+    {
+        printf("----- <empty> ----\n");
+        return;
     }
 }
 
-// Pre order traversal (Visit the root as the first value)
-void preorder(node *current)
+int maxDepth(treenode *root)
 {
-    if (current != NULL)
-    {
-        printf(" %d ", current->key);
-        inorder(current->left);
-        inorder(current->right);
-    }
-}
-
-// Post order traversal (Visit the root as the last value)
-void postorder(node *current)
-{
-    if (current != NULL)
-    {
-        inorder(current->left);
-        inorder(current->right);
-        printf(" %d ", current->key);
-    }
-}
-
-// Return the maximum depth
-int maxDepth(node *current)
-{
-    if (current == NULL)
+    if (root == NULL)
     {
         return 0;
     }
     else 
     {
-        /* compute the depth of each subtree */
-        int lDepth = maxDepth(current->left);
-        int rDepth = maxDepth(current->right);
+        // compute the depth of each subtree
+        int lDepth = maxDepth(root->left);
+        int rDepth = maxDepth(root->right);
  
-        /* use the larger one */
+        //  use the larger one 
         if (lDepth > rDepth)
         {
             return (lDepth + 1);
@@ -467,34 +445,12 @@ int maxDepth(node *current)
     }
 }
 
-// Show all student keys in a given level from left to right
-void currentlevel(node *current, int level)
+void destroy_tree(treenode *root)
 {
-    if (current != NULL) 
-    {
-        if (level == 0)
-        {
-            printf("%d ", current->key);
-        }
-        else if (level > 0) 
-        { 
-            currentlevel(current->left, level-1); 
-            currentlevel(current->right, level-1);
-        }			
-    }
-    else
-    {
-        return;
-    }
-}
-
-// Free dynamic memory
-void destroy_tree(node *current)
-{
-  if(current != NULL)
+  if(root != NULL)
   {
-      destroy_tree(current->left);
-      destroy_tree(current->right);
-      free(current);
+      destroy_tree(root->left);
+      destroy_tree(root->right);
+      free(root);
   }
 }  

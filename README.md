@@ -18,23 +18,19 @@ For the binary_tree.c, several operations are performed:
 * Updating in the binary tree
 * Tranversing the whole tree (In order, Pre order and post order)
 * Find the depth of the tree
-* SHow the number of nodes per level of the tree
-* SHow whether the tree is empty
 ```
 
 * [stack_queues](stack_queues)
 > The challenge/problem/task is shown below.
 ```
 The folder contains
-- stacks.c - The program implements a stack abstract data type using arrays.
+- stacks_array.c - The program implements a stack abstract data type using arrays. Allows for 'unlimited' number of stacks.
+- stacks_ll.c - The program implements a stack abstract data type using linked lists.  Allows for 'unlimited' number of stacks.
 - queues.c - The program implements a queue abstract data type using arrays.
 
 For both stacks and queues, basic operations are done:
     * Insterting a new item
     * Removing an item
-    * Checking their current total size
-    * Checking if they are empty or full
-    * Checking their topmost element (Queue is FIFO - First In First Out while Stack is LIFO - Last In First Out)
 ```
 
 * [abstract_data_types_sum](abstract_data_types_sum/sum.c)
@@ -274,6 +270,13 @@ The author of this project is Richard Odhiambo.
 
  You can find me here at:
 [Github](https://github.com/o-richard)
+
+# Credits
+
+Here's a list of resources that have helped me in creating better implementations of the various problem sets
+
+- Jacob Sorber [Youtube](https://www.youtube.com/@JacobSorber)
+- CS50's Introduction to Computer Science [EDX](https://www.edx.org/course/introduction-computer-science-harvardx-cs50x)
 
 # License
 
